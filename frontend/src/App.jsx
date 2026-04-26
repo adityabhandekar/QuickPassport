@@ -20,7 +20,7 @@ function App() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "https://quickpassport.onrender.com";
+  const API_URL = "http://127.0.0.1:5000";
 
   const aspectRatio = size === "35x45" ? 35 / 45 : 1;
 
@@ -156,7 +156,9 @@ function App() {
           </div>
         </div>
 
-        
+        <a href="#generator" className="nav-btn">
+          Start Now
+        </a>
       </nav>
 
       <main className="hero">
@@ -208,31 +210,53 @@ function App() {
           </label>
 
           {imageSrc && (
-            <>
-              <div className="crop-box">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={aspectRatio}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
+            <div className="editor-preview-layout">
+              <div className="editor-box">
+                <h3>Edit Photo</h3>
+
+                <div className="crop-box">
+                  <Cropper
+                    image={imageSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={aspectRatio}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                  />
+                </div>
+
+                <div className="control full">
+                  <label>Adjust Zoom</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="0.1"
+                    value={zoom}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                  />
+                </div>
               </div>
 
-              <div className="control full">
-                <label>Adjust Zoom</label>
-                <input
-                  type="range"
-                  min="1"
-                  max="3"
-                  step="0.1"
-                  value={zoom}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                />
+              <div className="preview-box">
+                <h3>Final Preview</h3>
+                <p>After background remove + selected color</p>
+
+                {previewLoading ? (
+                  <div className="preview-loader">
+                    <div className="spinner"></div>
+                    <span>Removing background...</span>
+                  </div>
+                ) : finalPreview ? (
+                  <img src={finalPreview} alt="Final Preview" />
+                ) : (
+                  <div className="empty-preview">
+                    Click “Preview Final Photo”
+                  </div>
+                )}
               </div>
-            </>
+            </div>
           )}
 
           <div className="settings-grid">
@@ -267,6 +291,7 @@ function App() {
 
             <div className="control">
               <label>Background Color</label>
+
               <div className="color-row">
                 <input
                   type="color"
@@ -314,14 +339,6 @@ function App() {
               {loading ? "Generating..." : "Generate & Download"}
             </button>
           </div>
-
-          {finalPreview && (
-            <div className="final-preview">
-              <h3>Final Preview</h3>
-              <p>Background removed and selected color applied.</p>
-              <img src={finalPreview} alt="Final Preview" />
-            </div>
-          )}
         </section>
       </main>
 
@@ -355,6 +372,7 @@ function App() {
                 <p>Fast. Easy. Passport Ready.</p>
               </div>
             </div>
+
             <p className="footer-about">
               A simple passport photo generator that helps users create
               printable A4 passport photo sheets without login.
@@ -377,8 +395,10 @@ function App() {
             </div>
 
             <div>
-              <h4>Develope By</h4>
+              <h4>Made By</h4>
               <a href="#">Aditya Bhandekar</a>
+              <a href="#">Portfolio Project</a>
+              <a href="#">React + Flask</a>
             </div>
           </div>
         </div>

@@ -30,7 +30,7 @@ def mm_to_px(mm, dpi=300):
     return int((mm / 25.4) * dpi)
 
 
-def remove_background(input_path, output_path):
+def remove_background(input_path, output_path, size="auto"):
     if not REMOVE_BG_API_KEY:
         raise Exception("REMOVE_BG_API_KEY missing in .env")
 
@@ -38,7 +38,7 @@ def remove_background(input_path, output_path):
         response = requests.post(
             "https://api.remove.bg/v1.0/removebg",
             files={"image_file": img},
-            data={"size": "auto"},
+            data={"size": size},
             headers={"X-Api-Key": REMOVE_BG_API_KEY},
         )
 
@@ -66,7 +66,6 @@ def add_background(input_path, output_path, bg_color):
 
 def resize_passport_photo(input_path, output_path, size_key):
     width_mm, height_mm = PHOTO_SIZES.get(size_key, PHOTO_SIZES["35x45"])
-
     width_px = mm_to_px(width_mm)
     height_px = mm_to_px(height_mm)
 
@@ -89,7 +88,6 @@ def create_a4_sheet_image(photo_path, output_path, size_key, copies):
     gap_px = mm_to_px(4, dpi)
 
     sheet = Image.new("RGB", (a4_width_px, a4_height_px), "white")
-
     photo = Image.open(photo_path).convert("RGB")
     photo = photo.resize((photo_width_px, photo_height_px))
 
@@ -97,11 +95,7 @@ def create_a4_sheet_image(photo_path, output_path, size_key, copies):
     rows = (a4_height_px - 2 * margin_px) // (photo_height_px + gap_px)
 
     max_photos = cols * rows
-
-    if copies == "auto":
-        total = max_photos
-    else:
-        total = min(int(copies), max_photos)
+    total = max_photos if copies == "auto" else min(int(copies), max_photos)
 
     count = 0
     y = margin_px
@@ -161,7 +155,8 @@ def preview():
 
     file.save(original_path)
 
-    success = remove_background(original_path, no_bg_path)
+    # Faster preview
+    success = remove_background(original_path, no_bg_path, size="preview")
 
     if not success:
         return {"error": "Background removal failed"}, 500
@@ -194,7 +189,7 @@ def generate():
 
     file.save(original_path)
 
-    success = remove_background(original_path, no_bg_path)
+    success = remove_background(original_path, no_bg_path, size="auto")
 
     if not success:
         return {"error": "Background removal failed"}, 500
