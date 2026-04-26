@@ -20,7 +20,7 @@ function App() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "https://quickpassport.onrender.com";
+  const API_URL = "http://127.0.0.1:5000";
 
   const aspectRatio = size === "35x45" ? 35 / 45 : 1;
 
@@ -30,7 +30,6 @@ function App() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
 
     setFileName(file.name);
@@ -74,19 +73,6 @@ function App() {
     });
   };
 
-  const createFormData = async () => {
-    const croppedFile = await createCroppedImage();
-
-    const formData = new FormData();
-    formData.append("image", croppedFile);
-    formData.append("bgColor", bgColor);
-    formData.append("size", size);
-    formData.append("copies", copies);
-    formData.append("outputType", outputType);
-
-    return formData;
-  };
-
   const previewFinalPhoto = async () => {
     if (!imageSrc) {
       alert("Please upload image first");
@@ -125,7 +111,14 @@ function App() {
     setLoading(true);
 
     try {
-      const formData = await createFormData();
+      const croppedFile = await createCroppedImage();
+
+      const formData = new FormData();
+      formData.append("image", croppedFile);
+      formData.append("bgColor", bgColor);
+      formData.append("size", size);
+      formData.append("copies", copies);
+      formData.append("outputType", outputType);
 
       const response = await axios.post(`${API_URL}/generate`, formData, {
         responseType: "blob",
@@ -162,50 +155,56 @@ function App() {
             <span>Fast. Easy. Passport Ready.</span>
           </div>
         </div>
+
+        
       </nav>
 
       <main className="hero">
         <section className="left-panel">
-          <div className="badge">AI Background Removal + A4 PDF Generator</div>
+          <div className="badge">AI Passport Photo Maker</div>
 
-          <h1>Create passport photo sheets in seconds.</h1>
+          <h1>Generate print-ready passport photos instantly.</h1>
 
           <p>
-            Upload your photo, crop it, choose background color, select passport
-            size, and download a print-ready A4 sheet.
+            Upload your photo, crop it perfectly, remove background, choose any
+            background color, and download a professional A4 photo sheet.
           </p>
 
-          <div className="steps">
+          <div className="hero-actions">
+            <a href="#generator" className="hero-primary">
+              Create Photo Sheet
+            </a>
+            <span>No login required</span>
+          </div>
+
+          <div className="stats">
             <div>
-              <b>01</b>
-              <span>Upload</span>
+              <h3>35×45</h3>
+              <p>India size</p>
             </div>
             <div>
-              <b>02</b>
-              <span>Crop</span>
+              <h3>2×2</h3>
+              <p>US size</p>
             </div>
             <div>
-              <b>03</b>
-              <span>Preview</span>
-            </div>
-            <div>
-              <b>04</b>
-              <span>Download</span>
+              <h3>A4</h3>
+              <p>Print ready</p>
             </div>
           </div>
         </section>
 
-        <section className="app-card">
+        <section className="app-card" id="generator">
           <div className="card-header">
-            <h2>Generate Your Photo Sheet</h2>
-            <p>No login required. Upload, preview, and download.</p>
+            <span>Quick Generator</span>
+            <h2>Create Your Passport Sheet</h2>
+            <p>Upload → Crop → Preview → Download</p>
           </div>
 
           <label className="upload-box">
             <input type="file" accept="image/*" onChange={handleImageChange} />
-            <div className="upload-icon">📷</div>
-            <h3>{fileName || "Upload your photo"}</h3>
-            <p>PNG, JPG, JPEG supported</p>
+            <div className="upload-icon">📸</div>
+            <h3>{fileName || "Click to upload your photo"}</h3>
+            <p>Supports JPG, JPEG, PNG</p>
           </label>
 
           {imageSrc && (
@@ -223,7 +222,7 @@ function App() {
               </div>
 
               <div className="control full">
-                <label>Zoom</label>
+                <label>Adjust Zoom</label>
                 <input
                   type="range"
                   min="1"
@@ -248,10 +247,7 @@ function App() {
 
             <div className="control">
               <label>Copies</label>
-              <select
-                value={copies}
-                onChange={(e) => setCopies(e.target.value)}
-              >
+              <select value={copies} onChange={(e) => setCopies(e.target.value)}>
                 <option value="auto">Auto-fill A4</option>
                 <option value="8">8 Photos</option>
                 <option value="16">16 Photos</option>
@@ -328,6 +324,69 @@ function App() {
           )}
         </section>
       </main>
+
+      <section className="features">
+        <div className="feature-card">
+          <span>⚡</span>
+          <h3>Fast Processing</h3>
+          <p>Generate passport photo sheets quickly with simple steps.</p>
+        </div>
+
+        <div className="feature-card">
+          <span>🎨</span>
+          <h3>Custom Background</h3>
+          <p>Use white, blue, red, or any color from the color wheel.</p>
+        </div>
+
+        <div className="feature-card">
+          <span>📄</span>
+          <h3>PDF & JPG Export</h3>
+          <p>Download a print-ready A4 PDF or JPG sheet.</p>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <div className="footer-logo">
+              <img src="/my.jpg" alt="QuickPassport Logo" />
+              <div>
+                <h2>QuickPassport</h2>
+                <p>Fast. Easy. Passport Ready.</p>
+              </div>
+            </div>
+            <p className="footer-about">
+              A simple passport photo generator that helps users create
+              printable A4 passport photo sheets without login.
+            </p>
+          </div>
+
+          <div className="footer-links">
+            <div>
+              <h4>Product</h4>
+              <a href="#generator">Generator</a>
+              <a href="#generator">Preview</a>
+              <a href="#generator">Download</a>
+            </div>
+
+            <div>
+              <h4>Sizes</h4>
+              <a href="#generator">35×45 mm</a>
+              <a href="#generator">2×2 inch</a>
+              <a href="#generator">50×50 mm</a>
+            </div>
+
+            <div>
+              <h4>Develope By</h4>
+              <a href="#">Aditya Bhandekar</a>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} QuickPassport. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
