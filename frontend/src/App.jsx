@@ -20,7 +20,7 @@ function App() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "http://127.0.0.1:5000";
+  const API_URL = "https://quickpassport.onrender.com";
 
   const aspectRatio = size === "35x45" ? 35 / 45 : 1;
 
